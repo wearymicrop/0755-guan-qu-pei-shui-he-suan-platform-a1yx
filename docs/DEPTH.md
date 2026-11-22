@@ -15,6 +15,7 @@
 | M5 尾量调平 | 分派最小水量单位 | `GET /api/tail/{sample}` | `app/modules/m5_tail/rules.py` | `tests/test_tail.py` |
 | M6 斗口勾稽 | 比对供水、损耗、实配与剩余 | `GET /api/balance/{sample}` | `app/modules/m6_balance/rules.py` | `tests/test_balance.py` |
 | M7 调度回执 | 编制可下发回执或待审草案 | `GET /api/dispatch/{sample}` | `app/modules/m7_dispatch/rules.py` | `tests/test_dispatch.py` |
+| M8 故障改派账 | 中途闸门故障后停闸、挂起与剩余水量唯一重排 | `POST /api/incidents` | `app/modules/m8_incidents/rules.py`、`app/incidents_store.py` | `tests/test_incidents.py`、`tests/test_incident_api.py` |
 
 ## 陷阱登记
 
@@ -29,6 +30,10 @@
 | TRAP-23 | 干净样例：权证在批次开始失效 | 两版均生效 | 采用半开区间 | `app/modules/m2_rights/rules.py` | `tests/test_rights.py::test_end_exclusive` |
 | TRAP-24 | 干净样例：斗口余数相同 | 逐行四舍五入超分 | 用最大余数守恒 | `app/modules/m5_tail/rules.py` | `tests/test_tail.py::test_largest_remainder` |
 | TRAP-25 | 脏样例：斗口活动权证重叠 | 取到哪个版本不确定 | 重叠版本同时隔离 | `app/modules/m2_rights/rules.py` | `tests/test_rights.py::test_overlap_right` |
+| TRAP-27 | 放水中途闸门故障 | 重算时把已放量再扣一遍 | 已放量只读，仅对未放水量重排 | `app/modules/m8_incidents/rules.py` | `tests/test_incidents.py::test_delivered_amounts_are_immutable` |
+| TRAP-28 | 同一故障重试 | 二次改派、重复扣减 | 故障号主键幂等落库，冲突底账拒绝覆盖 | `app/incidents_store.py` | `tests/test_incident_api.py::test_retry_returns_same_ledger_without_double_deduction` |
+| TRAP-29 | 故障影响范围不明 | 盲目停水或继续供水 | impact=unknown 斗口挂起并先关闸，待处理水量释放 | `app/modules/m8_incidents/rules.py` | `tests/test_incidents.py::test_unknown_impact_outlet_is_held` |
+| TRAP-30 | 重排结果随遍历顺序变化 | 每次改派账不同 | 保底优先 + 原轮灌顺序灌满，纯函数确定性输出 | `app/modules/m8_incidents/rules.py` | `tests/test_incidents.py::test_output_is_deterministic` |
 
 ## 对账规则
 
@@ -37,3 +42,5 @@
 ## 已知边界
 
 按单一完整轮灌时段计算，时段内切换闸令需分批录入。渠道是单渠首树状网络，按实测入流扣账。回执草案由人工复核。
+
+故障改派账（M8）在原规划盘子内重排，不新增供水、不突破斗口原安排上限；故障子树按树状渠网整棵判定。改派账与规划归档分表存储，同一故障号只认首次落库结果。

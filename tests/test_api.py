@@ -26,9 +26,16 @@ def test_error_paths(client):
     assert client.get("/work/unknown").status_code == 404
 
 
-def test_workbench_and_navigation(client):
+def test_workbench_and_navigation(client, clean):
     for stage, caption, _, _ in STAGES:
         response = client.get(f"/work/{stage}?sample=dirty")
         assert response.status_code == 200
         assert f'aria-current="page">{caption}' in response.text
     assert client.get("/?sample=unknown").status_code == 404
+
+
+def test_incident_workbench_page(client):
+    response = client.get("/work/incidents?sample=clean")
+    assert response.status_code == 200
+    assert "故障改派账" in response.text
+    assert "INC-20261120-EAST-01" in response.text

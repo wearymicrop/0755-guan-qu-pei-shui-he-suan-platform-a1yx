@@ -1,0 +1,15 @@
+{
+  "incident": "INC-20261120-EAST-01",
+  "fault_channel": "东支渠",
+  "at": "2026-11-20T10:00:00+08:00",
+  "deliveries": [
+    {"outlet": "001", "delivered": "1.7", "unit": "m3", "impact": "reachable"},
+    {"outlet": "002", "delivered": "1.0", "unit": "m3", "impact": "unknown"},
+    {"outlet": "003", "delivered": "0.5", "unit": "m3", "impact": "affected"},
+    {"outlet": "031", "delivered": "0.2", "unit": "m3", "impact": "affected"},
+    {"outlet": "020", "delivered": "0.6", "unit": "m3", "impact": "reachable"},
+    {"outlet": "011", "delivered": "1.2", "unit": "m3", "impact": "reachable"},
+    {"outlet": "012", "delivered": "0.7", "unit": "m3", "impact": "reachable"},
+    {"outlet": "041", "delivered": "0.1", "unit": "m3", "impact": "reachable"}
+  ]
+}

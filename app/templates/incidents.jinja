@@ -1,0 +1,48 @@
+{% set ledger = current.ledger %}
+<div class="panel-head"><h2>故障改派账</h2>
+<small>故障 {{ current.fault_channel }} · {{ current.incident }} ·
+{{ '可下发' if current.state=='ready' else '暂停下发（含挂起/异常）' }}</small></div>
+
+<section class="kpis" aria-label="改派汇总">
+{% for label, key in [('原安排 L','planned_l'),('已放量 L','delivered_l'),('新安排 L','new_allocated_l'),('渠尾余水 L','tail_reserve_l')] %}
+<div><span>{{ label }}</span><strong>{{ '{:,}'.format(current.summary[key]) }} <small>L</small></strong></div>
+{% endfor %}
+</section>
+
+<h3>逐项对账（原安排 / 已放量 / 新安排 / 待处理）</h3>
+<div class="scroll"><table>
+<thead><tr><th scope="col">斗口</th><th scope="col">渠段</th><th scope="col">状态</th>
+<th class="num" scope="col">原安排</th><th class="num" scope="col">已放量</th>
+<th class="num" scope="col">新安排</th><th class="num" scope="col">待处理</th>
+<th class="num" scope="col">释放</th><th class="num" scope="col">累计</th></tr></thead>
+<tbody>
+{% for row in ledger %}
+<tr data-row>
+<td>{{ row.outlet }}</td><td>{{ row.channel }}</td>
+<td><span class="signal {{ row.state }}">{{ {'done':'已放完','stop':'停闸','held':'挂起','reschedule':'改派'}[row.state] }}</span></td>
+<td class="num">{{ '{:,}'.format(row.planned_l) }}</td>
+<td class="num">{{ '{:,}'.format(row.delivered_l) }}</td>
+<td class="num">{{ '{:,}'.format(row.new_allocated_l) }}</td>
+<td class="num">{{ '{:,}'.format(row.pending_l) }}</td>
+<td class="num">{{ '{:,}'.format(row.released_l) }}</td>
+<td class="num">{{ '{:,}'.format(row.total_l) }}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+
+<h3>开闸指令（先停后开，序号即执行顺序）</h3>
+<div class="scroll"><table>
+<thead><tr><th class="num" scope="col">序号</th><th scope="col">指令</th>
+<th scope="col">斗口</th><th scope="col">渠段</th><th class="num" scope="col">水量 L</th></tr></thead>
+<tbody>
+{% for c in current.commands %}
+<tr><td class="num">{{ c.seq }}</td>
+<td><span class="signal {{ c.command }}">{{ '关闸' if c.command=='close' else '开闸' }}</span></td>
+<td>{{ c.outlet }}</td><td>{{ c.channel }}</td><td class="num">{{ '{:,}'.format(c.amount_l) }}</td></tr>
+{% endfor %}
+</tbody></table></div>
+
+{% if current.issues %}
+<h3>异常证据</h3>
+<div class="issue-list">{% for item in current.issues %}<details><summary>{{ item.label }}</summary><code>{{ item.code }}</code></details>{% endfor %}</div>
+{% endif %}

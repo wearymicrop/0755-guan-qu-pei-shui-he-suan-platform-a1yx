@@ -7,4 +7,10 @@ REASONS = {
     "CHANNEL_DISCONNECTED": "渠段未接入渠首或存在环路", "CHILD_FLOW_EXCESS": "支渠入流超出上游净流量",
     "RIGHT_ROUTE_BLOCKED": "权证对应渠段不可配水", "MINIMUM_SHORTAGE": "可用流量低于保底需求",
     "DUPLICATE_OUTLET": "斗口重复扣账", "CHANNEL_UNBALANCED": "渠段水量差异",
+    "BAD_INCIDENT": "故障申报字段有误", "UNKNOWN_FAULT_CHANNEL": "故障渠段不在渠网中",
+    "BAD_DELIVERY": "已放水量记录有误", "DELIVERY_EXCEEDS_PLAN": "已放量超出原安排上限",
+    "DELIVERY_ROUTE_CLOSED": "已放量斗口的渠段原计划不可供水", "UNKNOWN_OUTLET": "申报斗口不在有效权证内",
+    "OUTLET_IMPACT_UNKNOWN": "故障影响不明先挂起", "GUARANTEE_SHORTAGE": "保底水量无法满足",
+    "FAULT_LEDGER_DIFFERENCE": "故障改派账水量未对平",
+    "INCIDENT_CONFLICT": "同故障号已有改派账且底账不一致",
 }
